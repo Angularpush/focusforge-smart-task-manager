@@ -1,0 +1,120 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: focusforge-postgres
+    environment:
+      POSTGRES_DB: focusforge
+      POSTGRES_USER: focusforge
+      POSTGRES_PASSWORD: dev_password_123
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    networks:
+      - focusforge-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U focusforge -d focusforge"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  mongodb:
+    image: mongo:6.0
+    container_name: focusforge-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: focusforge
+      MONGO_INITDB_ROOT_PASSWORD: dev_password_123
+      MONGO_INITDB_DATABASE: focusforge
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - focusforge-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis:
+    image: redis:7-alpine
+    container_name: focusforge-redis
+    command: redis-server --appendonly yes --requirepass dev_password_123
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - focusforge-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Optional: Redis Commander for GUI access
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: focusforge-redis-commander
+    environment:
+      REDIS_HOSTS: local:redis:6379:0:dev_password_123
+    ports:
+      - "8081:8081"
+    networks:
+      - focusforge-network
+    depends_on:
+      - redis
+
+  # Optional: Mongo Express for GUI access
+  mongo-express:
+    image: mongo-express:latest
+    container_name: focusforge-mongo-express
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: focusforge
+      ME_CONFIG_MONGODB_ADMINPASSWORD: dev_password_123
+      ME_CONFIG_MONGODB_URL: mongodb://focusforge:dev_password_123@mongodb:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin123
+    ports:
+      - "8082:8081"
+    networks:
+      - focusforge-network
+    depends_on:
+      - mongodb
+
+  # Optional: pgAdmin for PostgreSQL GUI access
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: focusforge-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@focusforge.dev
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "8083:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - focusforge-network
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+    driver: local
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  focusforge-network:
+    driver: bridge
