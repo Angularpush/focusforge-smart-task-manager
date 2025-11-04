@@ -1,6 +1,6 @@
 import rateLimit from 'express-rate-limit';
 import RedisStore from 'rate-limit-redis';
-import { redisClient } from '../config/redis';
+import { getRedisClient } from '../config/redis';
 import { config } from '../config/environment';
 import { Request, Response } from 'express';
 
