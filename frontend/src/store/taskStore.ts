@@ -49,12 +49,14 @@ interface TaskState {
   selectedTask: Task | null;
   isLoading: boolean;
   error: string | null;
+  subjects: string[];
 
   // Actions
   setFilters: (filters: TaskFilters) => void;
   setSelectedTask: (task: Task | null) => void;
   clearFilters: () => void;
   clearError: () => void;
+  setSubjects: (subjects: string[]) => void;
 }
 
 // API base URL
