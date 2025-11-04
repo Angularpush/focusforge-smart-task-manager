@@ -19,9 +19,16 @@ export const rateLimitConfig = {
     },
     standardHeaders: true,
     legacyHeaders: false,
-    store: redisClient ? new RedisStore({
-      sendCommand: (...args: string[]) => redisClient.call(...args),
-    }) : undefined,
+    store: (() => {
+      try {
+        const redisClient = getRedisClient();
+        return new RedisStore({
+          sendCommand: (...args: string[]) => redisClient.call(...args),
+        });
+      } catch {
+        return undefined;
+      }
+    })(),
   },
 
   // Authentication endpoints (more restrictive)
@@ -36,9 +43,16 @@ export const rateLimitConfig = {
       },
     },
     skipSuccessfulRequests: true,
-    store: redisClient ? new RedisStore({
-      sendCommand: (...args: string[]) => redisClient.call(...args),
-    }) : undefined,
+    store: (() => {
+      try {
+        const redisClient = getRedisClient();
+        return new RedisStore({
+          sendCommand: (...args: string[]) => redisClient.call(...args),
+        });
+      } catch {
+        return undefined;
+      }
+    })(),
   },
 
   // Task endpoints
@@ -52,9 +66,16 @@ export const rateLimitConfig = {
         message: 'Too many task operations, please try again later.',
       },
     },
-    store: redisClient ? new RedisStore({
-      sendCommand: (...args: string[]) => redisClient.call(...args),
-    }) : undefined,
+    store: (() => {
+      try {
+        const redisClient = getRedisClient();
+        return new RedisStore({
+          sendCommand: (...args: string[]) => redisClient.call(...args),
+        });
+      } catch {
+        return undefined;
+      }
+    })(),
   },
 
   // Chat endpoints (higher limit for real-time)
@@ -68,9 +89,16 @@ export const rateLimitConfig = {
         message: 'Too many chat messages, please slow down.',
       },
     },
-    store: redisClient ? new RedisStore({
-      sendCommand: (...args: string[]) => redisClient.call(...args),
-    }) : undefined,
+    store: (() => {
+      try {
+        const redisClient = getRedisClient();
+        return new RedisStore({
+          sendCommand: (...args: string[]) => redisClient.call(...args),
+        });
+      } catch {
+        return undefined;
+      }
+    })(),
   },
 
   // Focus timer endpoints
@@ -84,9 +112,16 @@ export const rateLimitConfig = {
         message: 'Too many focus session operations, please try again later.',
       },
     },
-    store: redisClient ? new RedisStore({
-      sendCommand: (...args: string[]) => redisClient.call(...args),
-    }) : undefined,
+    store: (() => {
+      try {
+        const redisClient = getRedisClient();
+        return new RedisStore({
+          sendCommand: (...args: string[]) => redisClient.call(...args),
+        });
+      } catch {
+        return undefined;
+      }
+    })(),
   },
 
   // Analytics endpoints
@@ -100,9 +135,16 @@ export const rateLimitConfig = {
         message: 'Too many analytics requests, please try again later.',
       },
     },
-    store: redisClient ? new RedisStore({
-      sendCommand: (...args: string[]) => redisClient.call(...args),
-    }) : undefined,
+    store: (() => {
+      try {
+        const redisClient = getRedisClient();
+        return new RedisStore({
+          sendCommand: (...args: string[]) => redisClient.call(...args),
+        });
+      } catch {
+        return undefined;
+      }
+    })(),
   },
 };
 
@@ -140,9 +182,16 @@ export const createSmartRateLimiter = (
     },
     standardHeaders: true,
     legacyHeaders: false,
-    store: redisClient ? new RedisStore({
-      sendCommand: (...args: string[]) => redisClient.call(...args),
-    }) : undefined,
+    store: (() => {
+      try {
+        const redisClient = getRedisClient();
+        return new RedisStore({
+          sendCommand: (...args: string[]) => redisClient.call(...args),
+        });
+      } catch {
+        return undefined;
+      }
+    })(),
   });
 };
 
