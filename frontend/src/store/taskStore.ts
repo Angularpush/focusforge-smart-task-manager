@@ -267,6 +267,7 @@ export const useTaskStore = create<TaskState>()(
       selectedTask: null,
       isLoading: false,
       error: null,
+      subjects: [],
 
       // Actions
       setFilters: (filters) => {
@@ -295,6 +296,10 @@ export const useTaskStore = create<TaskState>()(
 
       setLoading: (isLoading) => {
         set({ isLoading });
+      },
+
+      setSubjects: (subjects) => {
+        set({ subjects });
       },
     }),
     {
